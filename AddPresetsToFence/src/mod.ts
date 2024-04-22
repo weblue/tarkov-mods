@@ -4,6 +4,7 @@ import { DependencyContainer } from "tsyringe";
 import type { IPreAkiLoadMod } from "@spt-aki/models/external/IPreAkiLoadMod";
 import type { ProfileHelper } from "@spt-aki/helpers/ProfileHelper";
 import type {StaticRouterModService} from "@spt-aki/services/mod/staticRouter/StaticRouterModService";
+import type {DynamicRouterModService} from "@spt-aki/services/mod/dynamicRouter/DynamicRouterModService";
 import { Money } from "@spt-aki/models/enums/Money";
 import type { Item } from "@spt-aki/models/eft/common/tables/IItem";
 import type { IWeaponBuild } from "@spt-aki/models/eft/profile/IAkiProfile";
@@ -19,7 +20,6 @@ import { HashUtil } from "@spt-aki/utils/HashUtil";
 
 class Mod implements IPreAkiLoadMod
 {
-    private logger: ILogger
     private fluentAssortCreator: FluentAssortCreator
 
     public preAkiLoad(container: DependencyContainer): void 
@@ -27,7 +27,24 @@ class Mod implements IPreAkiLoadMod
         const logger = container.resolve<ILogger>("WinstonLogger");
         const staticRouterModService = container.resolve<StaticRouterModService>("StaticRouterModService");
         const hashUtil: HashUtil = container.resolve<HashUtil>("HashUtil");
-        this.fluentAssortCreator = new FluentAssortCreator(hashUtil, this.logger);
+        this.fluentAssortCreator = new FluentAssortCreator(hashUtil, logger);
+        const dynamicRouterModService = container.resolve<DynamicRouterModService>("DynamicRouterModService");
+
+        // Hook up to existing AKI dynamic route
+        dynamicRouterModService.registerDynamicRouter(
+            "DynamicRoutePeekingAki",
+            [
+                {
+                    url: "/client/trading/api/getTraderAssort/579dc571d53a0658a154fbec",
+                    action: (url, info, sessionId, output) => 
+                    {
+                        logger.info("/client/trading/api/getTraderAssort/579dc571d53a0658a154fbec/ data was: " + JSON.stringify(output))
+                        return output;
+                    }
+                }
+            ],
+            "aki"
+        );
         
         // Hook up to existing AKI static route
         staticRouterModService.registerStaticRouter(
@@ -51,19 +68,24 @@ class Mod implements IPreAkiLoadMod
                         let count = 0; 
                 
                         const profile = profileHelper.getFullProfile(sessionId);
-                        const weaponBuilds = profile.userbuilds.weaponBuilds;
-                
-                        weaponBuilds.forEach((preset: IWeaponBuild) => 
+
+                        if (profile.userbuilds) 
                         {
-                            const presetItems: Item[] = preset.Items;
-                            this.fluentAssortCreator.createComplexAssortItem(presetItems)
-                                .addMoneyCost(Money.ROUBLES, RagfairPriceService.getDynamicOfferPriceForOffer(presetItems, Money.ROUBLES, false)*.6)
-                                .addBuyRestriction(5)
-                                .addLoyaltyLevel(1)
-                                .export(tables.traders[traderId]);
-                
-                            count++;
-                        });
+                            const weaponBuilds = profile.userbuilds.weaponBuilds;
+
+                            if (weaponBuilds)
+                                weaponBuilds.forEach((preset: IWeaponBuild) => 
+                                {
+                                    const presetItems: Item[] = preset.Items;
+                                    this.fluentAssortCreator.createComplexAssortItem(presetItems)
+                                        .addMoneyCost(Money.ROUBLES, RagfairPriceService.getDynamicOfferPriceForOffer(presetItems, Money.ROUBLES, false)*.6)
+                                        .addBuyRestriction(5)
+                                        .addLoyaltyLevel(1)
+                                        .export(tables.traders[traderId]);
+                    
+                                    count++;
+                                });
+                        }
                 
                         logger.info(`Added ${count} presets to Skier`);
 

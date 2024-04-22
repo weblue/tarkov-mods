@@ -41,16 +41,11 @@ class Mod implements IPreAkiLoadMod
                     {
                         logger.info("[AddPresetsToFence] injecting presets... ");
 
-                        // const traderId: string = "58330581ace78e27b8b10cee";
-
                         // Resolve SPT classes we'll use
-                        // const databaseServer: DatabaseServer = container.resolve<DatabaseServer>("DatabaseServer");
                         const RagfairPriceService = container.resolve<RagfairPriceService>("RagfairPriceService");
                         const profileHelper: ProfileHelper = container.resolve<ProfileHelper>("ProfileHelper");
                         const iTraderAssort: ITraderAssort = JSON.parse(output).data;
                 
-                        // Get a reference to the database tables
-                        // const tables = databaseServer.getTables();
                         let count = 0; 
                 
                         const profile = profileHelper.getFullProfile(sessionId);
@@ -64,11 +59,11 @@ class Mod implements IPreAkiLoadMod
                                 {
                                     const presetItems: Item[] = preset.Items;
                                     this.fluentAssortCreator.createComplexAssortItem(presetItems)
-                                        .addMoneyCost(Money.ROUBLES, RagfairPriceService.getDynamicOfferPriceForOffer(presetItems, Money.ROUBLES, false)*.6)
+                                        .addMoneyCost(Money.ROUBLES, RagfairPriceService.getDynamicOfferPriceForOffer(presetItems, Money.ROUBLES, false)*.5)
                                         .addBuyRestriction(5)
                                         .addLoyaltyLevel(1)
                                         .export(iTraderAssort);
-                    
+
                                     count++;
                                 });
                         }
@@ -77,8 +72,6 @@ class Mod implements IPreAkiLoadMod
 
                         const finalOutput = Object.assign({}, JSON.parse(output));
                         finalOutput.data = iTraderAssort;
-                        // logger.info(finalOutput)
-                        // logger.info(output)
 
                         return JSON.stringify(finalOutput);
                     }
@@ -86,59 +79,7 @@ class Mod implements IPreAkiLoadMod
             ],
             "aki"
         );
-        
-        // // Hook up to existing AKI static route
-        // staticRouterModService.registerStaticRouter(
-        //     "StaticRoutePeekingAki",
-        //     [
-        //         {
-        //             url: "/client/game/start",
-        //             action: (url, info, sessionId, output) => 
-        //             {
-        //                 logger.info("[AddPresetsToSkier] Loading... ");
-
-        //                 const traderId: string = "58330581ace78e27b8b10cee";
-
-        //                 // Resolve SPT classes we'll use
-        //                 const databaseServer: DatabaseServer = container.resolve<DatabaseServer>("DatabaseServer");
-        //                 const RagfairPriceService = container.resolve<RagfairPriceService>("RagfairPriceService");
-        //                 const profileHelper: ProfileHelper = container.resolve<ProfileHelper>("ProfileHelper");
-                
-        //                 // Get a reference to the database tables
-        //                 const tables = databaseServer.getTables();
-        //                 let count = 0; 
-                
-        //                 const profile = profileHelper.getFullProfile(sessionId);
-
-        //                 if (profile.userbuilds) 
-        //                 {
-        //                     const weaponBuilds = profile.userbuilds.weaponBuilds;
-
-        //                     if (weaponBuilds)
-        //                         weaponBuilds.forEach((preset: IWeaponBuild) => 
-        //                         {
-        //                             const presetItems: Item[] = preset.Items;
-        //                             this.fluentAssortCreator.createComplexAssortItem(presetItems)
-        //                                 .addMoneyCost(Money.ROUBLES, RagfairPriceService.getDynamicOfferPriceForOffer(presetItems, Money.ROUBLES, false)*.6)
-        //                                 .addBuyRestriction(5)
-        //                                 .addLoyaltyLevel(1)
-        //                                 .export(JSON.parse(output).data);
-                    
-        //                             count++;
-        //                         });
-        //                 }
-                
-        //                 logger.info(`Added ${count} presets to Skier`);
-
-        //                 return output;
-        //             }
-        //         }
-        //     ],
-        //     "aki"
-        // );
-        
     }
-
 }
 
 module.exports = { mod: new Mod() }

@@ -1,6 +1,6 @@
 {
-    "name": "AddPresetsToSkier",
-    "version": "1.0.1",
+    "name": "AddPresetsToFence",
+    "version": "1.1.0",
     "main": "src/mod.js",
     "license": "MIT",
     "author": "Nader",

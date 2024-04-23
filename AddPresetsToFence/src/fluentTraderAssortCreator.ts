@@ -152,31 +152,6 @@ export class FluentAssortConstructor
     //  * Reset objet ready for reuse
     //  * @returns 
     //  */
-    // public export(data: ITrader): FluentAssortConstructor
-    // {
-    //     const itemBeingSoldId = this.itemsToSell[0]._id;
-    //     if (data.assort.items.find(x => x._id === itemBeingSoldId))
-    //     {
-    //         this.logger.error(`Unable to add complex item with item key ${this.itemsToSell[0]._id}, key already used`);
-
-    //         return;
-    //     }
-
-    //     data.assort.items.push(...this.itemsToSell);
-    //     data.assort.barter_scheme[itemBeingSoldId] = this.barterScheme[itemBeingSoldId];
-    //     data.assort.loyal_level_items[itemBeingSoldId] = this.loyaltyLevel[itemBeingSoldId];
-
-    //     this.itemsToSell = [];
-    //     this.barterScheme = {};
-    //     this.loyaltyLevel = {};
-
-    //     return this;
-    // }
-
-    // /**
-    //  * Reset objet ready for reuse
-    //  * @returns 
-    //  */
     public export(assort: ITraderAssort): FluentAssortConstructor
     {
         const itemBeingSoldId = this.itemsToSell[0]._id;

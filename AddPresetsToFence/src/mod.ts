@@ -83,9 +83,6 @@ class Mod implements IPreAkiLoadMod
                 
                         logger.info(`Added ${count} presets to Fence`);
 
-                        // const finalOutput = Object.assign({}, JSON.parse(output));
-                        // finalOutput.data = iTraderAssort;
-
                         return output;
                     }
                 }

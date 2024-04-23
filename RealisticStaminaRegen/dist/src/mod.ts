@@ -10,7 +10,7 @@ class Mod implements IPostDBLoadMod {
         const tables = databaseServer.getTables()
         const logger = container.resolve<ILogger>("WinstonLogger");
 
-        tables.globals.config.Stamina.SprintDrainRate = 3
+        tables.globals.config.Stamina.SprintDrainRate = 4
         tables.globals.config.Stamina.BaseRestorationRate = 8
         tables.globals.config.Stamina.AimDrainRate = .8
 
